@@ -4,8 +4,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Cascade;
 
-@jakarta.persistence.Entity
+import java.util.List;
+
+@Entity
 @Table(name = "tech_user")
 @Data
 @Builder
@@ -18,8 +21,12 @@ public class TechUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
+    @Column(name = "surname")
     String surName;
     String password;
+    @Column(unique = true)
     String pin;
     String role;
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "user")
+    List<Account> accaountList;
 }
