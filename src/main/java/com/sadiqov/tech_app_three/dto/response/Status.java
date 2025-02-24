@@ -10,9 +10,11 @@ import java.io.Serializable;
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommonResponse<T> implements Serializable {
+
+public class Status implements Serializable {
 
     static final long serialVersionUID = 1L;
-    Status status;
-    T data;
+
+    StatusCode statusCode;
+    String message;
 }
