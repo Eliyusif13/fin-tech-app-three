@@ -10,7 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "tech_user")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,5 +29,5 @@ public class TechUser {
     String pin;
     String role;
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "user")
-    List<Account> accaountList;
+    List<Account> accountList;
 }

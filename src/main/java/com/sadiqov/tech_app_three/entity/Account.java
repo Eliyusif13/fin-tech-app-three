@@ -10,7 +10,8 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "user_accounts")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -25,7 +26,7 @@ public class Account {
     Boolean isActive;
     Integer accountNo;
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     TechUser user;
 
 }
