@@ -1,6 +1,5 @@
 package com.sadiqov.tech_app_three.dto.request;
 
-import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +20,5 @@ public class UserRequestDTO implements Serializable {
     String surName;
     String password;
     String pin;
-    List<UserAccountDTO> userAccountDTO;
+    List<UserAccountDTO> userAccountDTOList;
 }

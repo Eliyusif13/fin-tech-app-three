@@ -20,9 +20,15 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
- @ExceptionHandler(value = InvalidDTO.class)
-  public ResponseEntity<?> invalidDTO(InvalidDTO invalidDTO) {
-      return new ResponseEntity<>(invalidDTO.getResponseDTO(),
-              HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(value = InvalidDTO.class)
+    public ResponseEntity<?> invalidDTO(InvalidDTO invalidDTO) {
+        return new ResponseEntity<>(invalidDTO.getResponseDTO(),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = UserAlreadyExit.class)
+    public ResponseEntity<?> userAlreadyExit(UserAlreadyExit userAlreadyExit) {
+        return new ResponseEntity<>(userAlreadyExit.getCommonResponse(),
+                HttpStatus.BAD_REQUEST);
     }
 }
