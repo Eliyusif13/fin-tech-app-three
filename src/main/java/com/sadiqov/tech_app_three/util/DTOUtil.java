@@ -24,7 +24,7 @@ public class DTOUtil {
         checkDTOInput(userRequestDTO.getSurName());
         checkDTOInput(userRequestDTO.getPassword());
         checkDTOInput(userRequestDTO.getPin());
-        checkDTOInput(userRequestDTO.getUserAccountDTOList());
+        checkDTOInput(userRequestDTO.getAccountRequestDTOList());
     }
 
     public <T> void checkDTOInput(T t) {

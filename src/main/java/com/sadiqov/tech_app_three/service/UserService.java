@@ -4,6 +4,7 @@ import com.sadiqov.tech_app_three.dto.request.UserRequestDTO;
 import com.sadiqov.tech_app_three.dto.response.CommonResponse;
 import com.sadiqov.tech_app_three.dto.response.Status;
 import com.sadiqov.tech_app_three.dto.response.StatusCode;
+import com.sadiqov.tech_app_three.dto.response.UserResponseDto;
 import com.sadiqov.tech_app_three.entity.TechUser;
 import com.sadiqov.tech_app_three.exception.UserAlreadyExit;
 import com.sadiqov.tech_app_three.repository.UserRepository;
@@ -41,7 +42,12 @@ public class UserService {
                 .password(userRequestDTO.getPassword())
                 .pin(userRequestDTO.getPin()).role("ROLE_USER").build();
 
-        return null;
+        user.addAccountToUser(userRequestDTO.getAccountRequestDTOList());
+
+        return CommonResponse.builder().
+                status(Status.builder().statusCode(StatusCode.SUCCES)
+                        .message("User created Successfully !!!").build()).
+                data(UserResponseDto.entityResponse(userRepository.save(user))).build();
     }
 
 }
