@@ -12,7 +12,7 @@ import java.io.Serializable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommonResponse<T> implements Serializable {
 
-    static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
     Status status;
     T data;
 }

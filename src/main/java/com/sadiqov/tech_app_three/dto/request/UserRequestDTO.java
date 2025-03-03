@@ -20,5 +20,5 @@ public class UserRequestDTO implements Serializable {
     String surName;
     String password;
     String pin;
-    List<UserAccountDTO> userAccountDTOList;
+    List<AccountRequestDTO> accountRequestDTOList;
 }
