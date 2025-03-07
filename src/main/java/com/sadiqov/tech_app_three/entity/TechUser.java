@@ -21,15 +21,20 @@ import java.util.List;
 public class TechUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long id;
+    @Column(name = "user_name")
     String name;
-    @Column(name = "surname")
+    @Column(name = "user_suranme")
     String surName;
+    @Column(name = "password")
     String password;
-    @Column(unique = true)
+    @Column(name="pin",unique = true)
     String pin;
+    @Column(name = "role")
     String role;
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "user")
+    @Column(name = "account_list")
     List<Account> accountList;
 
     public void addAccountToUser(List<AccountRequestDTO> accountRequestDTOList) {

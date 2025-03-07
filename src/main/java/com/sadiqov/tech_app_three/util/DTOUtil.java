@@ -33,7 +33,7 @@ public class DTOUtil {
 
             throw InvalidDTO.builder().responseDTO(CommonResponse.builder()
                     .status(Status.builder().
-                            statusCode(StatusCode.INVALID_DTO).message("iNVALID Data").build()).
+                            statusCode(StatusCode.INVALID_DTO).message("INVALID Data").build()).
                     build()).build();
         }
     }

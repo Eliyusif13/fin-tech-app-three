@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(value = Exception.class)
     public ResponseEntity<?> internalError(Exception e) {
         e.printStackTrace();
         return new ResponseEntity<>(CommonResponse.builder()
