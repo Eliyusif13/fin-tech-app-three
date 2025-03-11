@@ -1,10 +1,10 @@
 package com.sadiqov.tech_app_three.entity;
 
 import com.sadiqov.tech_app_three.util.Currency;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity

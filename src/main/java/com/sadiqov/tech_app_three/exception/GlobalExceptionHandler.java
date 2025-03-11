@@ -29,6 +29,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = UserAlreadyExit.class)
     public ResponseEntity<?> userAlreadyExit(UserAlreadyExit userAlreadyExit) {
         return new ResponseEntity<>(userAlreadyExit.getCommonResponse(),
-                HttpStatus.BAD_REQUEST);
+                HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = NoSuchUserExits.class)
+    public ResponseEntity<?> noSuchUserExits(NoSuchUserExits noSuchUserExits) {
+        return new ResponseEntity<>(noSuchUserExits.getCommonResponse(), HttpStatus.NOT_FOUND);
     }
 }

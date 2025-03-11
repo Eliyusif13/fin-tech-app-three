@@ -1,11 +1,10 @@
 package com.sadiqov.tech_app_three.entity;
 
 import com.sadiqov.tech_app_three.dto.request.AccountRequestDTO;
-import jakarta.persistence.Id;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class TechUser {
-    @Id
+    @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     Long id;
