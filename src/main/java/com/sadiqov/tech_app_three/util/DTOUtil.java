@@ -1,5 +1,6 @@
 package com.sadiqov.tech_app_three.util;
 
+import com.sadiqov.tech_app_three.dto.request.AuthenticationRequestDto;
 import com.sadiqov.tech_app_three.dto.request.UserRequestDTO;
 import com.sadiqov.tech_app_three.dto.response.CommonResponse;
 import com.sadiqov.tech_app_three.dto.response.Status;
@@ -27,13 +28,19 @@ public class DTOUtil {
         checkDTOInput(userRequestDTO.getAccountRequestDTOList());
     }
 
+    public void isValid(AuthenticationRequestDto authenticationRequestDto) {
+
+        checkDTOInput(authenticationRequestDto.getPassword());
+        checkDTOInput(authenticationRequestDto.getPin());
+    }
+
     public <T> void checkDTOInput(T t) {
         if (Objects.isNull(t) || t.toString().isBlank()) {
             logger.error("Invalid input");
 
             throw InvalidDTO.builder().responseDTO(CommonResponse.builder()
                     .status(Status.builder().
-                            statusCode(StatusCode.INVALID_DTO).message("iNVALID Data").build()).
+                            statusCode(StatusCode.INVALID_DTO).message("INVALID Data").build()).
                     build()).build();
         }
     }

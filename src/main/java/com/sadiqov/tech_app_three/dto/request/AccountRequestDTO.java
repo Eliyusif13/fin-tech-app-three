@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AccountRequestDTO implements Serializable {
 
-    static final long serialVersionUID = 1L;
+   private static final long serialVersionUID = 1L;
     BigDecimal balance;
     Currency currency;
     Boolean isActive;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(value = Exception.class)
     public ResponseEntity<?> internalError(Exception e) {
         e.printStackTrace();
         return new ResponseEntity<>(CommonResponse.builder()
@@ -29,6 +29,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = UserAlreadyExit.class)
     public ResponseEntity<?> userAlreadyExit(UserAlreadyExit userAlreadyExit) {
         return new ResponseEntity<>(userAlreadyExit.getCommonResponse(),
-                HttpStatus.BAD_REQUEST);
+                HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = NoSuchUserExits.class)
+    public ResponseEntity<?> noSuchUserExits(NoSuchUserExits noSuchUserExits) {
+        return new ResponseEntity<>(noSuchUserExits.getCommonResponse(), HttpStatus.NOT_FOUND);
     }
 }

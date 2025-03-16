@@ -1,17 +1,22 @@
 package com.sadiqov.tech_app_three.service;
 
+import com.sadiqov.tech_app_three.dto.request.AuthenticationRequestDto;
 import com.sadiqov.tech_app_three.dto.request.UserRequestDTO;
 import com.sadiqov.tech_app_three.dto.response.CommonResponse;
 import com.sadiqov.tech_app_three.dto.response.Status;
 import com.sadiqov.tech_app_three.dto.response.StatusCode;
 import com.sadiqov.tech_app_three.dto.response.UserResponseDto;
 import com.sadiqov.tech_app_three.entity.TechUser;
+import com.sadiqov.tech_app_three.exception.NoSuchUserExits;
 import com.sadiqov.tech_app_three.exception.UserAlreadyExit;
 import com.sadiqov.tech_app_three.repository.UserRepository;
 import com.sadiqov.tech_app_three.util.DTOUtil;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +28,11 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     public CommonResponse<?> saveUser(UserRequestDTO userRequestDTO) {
         dtoUtil.isValid(userRequestDTO);
@@ -39,7 +49,7 @@ public class UserService {
         TechUser user = TechUser.builder().
                 name(userRequestDTO.getName()).
                 surName(userRequestDTO.getSurName())
-                .password(userRequestDTO.getPassword())
+                .password(passwordEncoder.encode(userRequestDTO.getPassword()))
                 .pin(userRequestDTO.getPin()).role("ROLE_USER").build();
 
         user.addAccountToUser(userRequestDTO.getAccountRequestDTOList());
@@ -48,6 +58,26 @@ public class UserService {
                 status(Status.builder().statusCode(StatusCode.SUCCES)
                         .message("User created Successfully !!!").build()).
                 data(UserResponseDto.entityResponse(userRepository.save(user))).build();
+    }
+
+    public CommonResponse<?> loginUser(AuthenticationRequestDto authenticationRequestDto) {
+        dtoUtil.isValid(authenticationRequestDto);
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
+                    (authenticationRequestDto.getPassword(),
+                            authenticationRequestDto.getPin()));
+        } catch (Exception e) {
+
+
+        throw NoSuchUserExits.builder().commonResponse(CommonResponse.builder().
+                status(Status.builder().statusCode(StatusCode.USER_NOT_EXITS).
+                        message("pin: " + authenticationRequestDto.getPin() + " or password: "
+                                + authenticationRequestDto.getPassword() + " is wrong.")
+                        .build()).build()).build();
+        }
+        return CommonResponse.builder().data(authenticationRequestDto).
+                status(Status.builder().statusCode(StatusCode.SUCCES).
+                        message("Welcome to our Fin_App_Three").build()).build();
     }
 
 }

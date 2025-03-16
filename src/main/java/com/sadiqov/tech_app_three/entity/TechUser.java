@@ -1,11 +1,10 @@
 package com.sadiqov.tech_app_three.entity;
 
 import com.sadiqov.tech_app_three.dto.request.AccountRequestDTO;
-import jakarta.persistence.Id;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,17 +18,22 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class TechUser {
-    @Id
+    @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long id;
+    @Column(name = "user_name")
     String name;
-    @Column(name = "surname")
+    @Column(name = "user_suranme")
     String surName;
+    @Column(name = "password")
     String password;
-    @Column(unique = true)
+    @Column(name="pin",unique = true)
     String pin;
+    @Column(name = "role")
     String role;
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "user")
+    @Column(name = "account_list")
     List<Account> accountList;
 
     public void addAccountToUser(List<AccountRequestDTO> accountRequestDTOList) {

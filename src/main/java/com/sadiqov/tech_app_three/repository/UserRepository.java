@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<TechUser, Long> {
 
-    @Query(value="select p from TechUser p join fetch p.accountList where p.pin =:p")
+    @Query(value="select p from TechUser p join fetch p.accountList where p.pin = :pin")
     Optional<TechUser> findBYPin(String pin);
 }

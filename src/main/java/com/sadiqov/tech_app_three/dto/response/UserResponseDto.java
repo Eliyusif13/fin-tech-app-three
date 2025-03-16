@@ -3,7 +3,6 @@ package com.sadiqov.tech_app_three.dto.response;
 import com.sadiqov.tech_app_three.dto.request.AccountRequestDTO;
 import com.sadiqov.tech_app_three.dto.request.UserRequestDTO;
 import com.sadiqov.tech_app_three.entity.TechUser;
-import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;

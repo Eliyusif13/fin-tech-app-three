@@ -1,5 +1,6 @@
 package com.sadiqov.tech_app_three.controller;
 
+import com.sadiqov.tech_app_three.dto.request.AuthenticationRequestDto;
 import com.sadiqov.tech_app_three.dto.request.UserRequestDTO;
 import com.sadiqov.tech_app_three.service.UserService;
 import lombok.AccessLevel;
@@ -24,5 +25,10 @@ public class UserController {
     public ResponseEntity<?> register(@RequestBody UserRequestDTO userRequestDTO) {
 
         return new ResponseEntity<>(userService.saveUser(userRequestDTO), HttpStatus.OK);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDto authenticationRequestDto){
+
+        return new ResponseEntity<>(authenticationRequestDto, HttpStatus.OK);
     }
 }
