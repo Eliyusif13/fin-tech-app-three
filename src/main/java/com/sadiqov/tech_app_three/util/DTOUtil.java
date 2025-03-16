@@ -1,5 +1,6 @@
 package com.sadiqov.tech_app_three.util;
 
+import com.sadiqov.tech_app_three.dto.request.AuthenticationRequestDto;
 import com.sadiqov.tech_app_three.dto.request.UserRequestDTO;
 import com.sadiqov.tech_app_three.dto.response.CommonResponse;
 import com.sadiqov.tech_app_three.dto.response.Status;
@@ -25,6 +26,12 @@ public class DTOUtil {
         checkDTOInput(userRequestDTO.getPassword());
         checkDTOInput(userRequestDTO.getPin());
         checkDTOInput(userRequestDTO.getAccountRequestDTOList());
+    }
+
+    public void isValid(AuthenticationRequestDto authenticationRequestDto) {
+
+        checkDTOInput(authenticationRequestDto.getPassword());
+        checkDTOInput(authenticationRequestDto.getPin());
     }
 
     public <T> void checkDTOInput(T t) {

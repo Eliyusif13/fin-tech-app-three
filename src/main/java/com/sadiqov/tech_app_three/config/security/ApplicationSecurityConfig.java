@@ -31,6 +31,7 @@ public class ApplicationSecurityConfig {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
         try {
             return httpSecurity.
