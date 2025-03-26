@@ -64,16 +64,16 @@ public class UserService {
         dtoUtil.isValid(authenticationRequestDto);
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
-                    (authenticationRequestDto.getPassword(),
-                            authenticationRequestDto.getPin()));
+                    (authenticationRequestDto.getPin(),
+                            authenticationRequestDto.getPassword()));
         } catch (Exception e) {
 
 
-        throw NoSuchUserExits.builder().commonResponse(CommonResponse.builder().
-                status(Status.builder().statusCode(StatusCode.USER_NOT_EXITS).
-                        message("pin: " + authenticationRequestDto.getPin() + " or password: "
-                                + authenticationRequestDto.getPassword() + " is wrong.")
-                        .build()).build()).build();
+            throw NoSuchUserExits.builder().commonResponse(CommonResponse.builder().
+                    status(Status.builder().statusCode(StatusCode.USER_NOT_EXITS).
+                            message("pin: " + authenticationRequestDto.getPin() + " or password: "
+                                    + authenticationRequestDto.getPassword() + " is wrong.")
+                            .build()).build()).build();
         }
         return CommonResponse.builder().data(authenticationRequestDto).
                 status(Status.builder().statusCode(StatusCode.SUCCES).

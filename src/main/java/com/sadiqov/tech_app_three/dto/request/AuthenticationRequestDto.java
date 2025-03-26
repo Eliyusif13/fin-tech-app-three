@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Builder
 public class AuthenticationRequestDto implements Serializable {
     private static final long serialVersionUID = 1L;
-String password;
-String pin;
+    String password;
+    String pin;
 
 }
