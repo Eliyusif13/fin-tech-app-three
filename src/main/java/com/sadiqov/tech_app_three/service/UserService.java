@@ -1,11 +1,9 @@
 package com.sadiqov.tech_app_three.service;
 
+import com.sadiqov.tech_app_three.config.security.JwtUtil;
 import com.sadiqov.tech_app_three.dto.request.AuthenticationRequestDto;
 import com.sadiqov.tech_app_three.dto.request.UserRequestDTO;
-import com.sadiqov.tech_app_three.dto.response.CommonResponse;
-import com.sadiqov.tech_app_three.dto.response.Status;
-import com.sadiqov.tech_app_three.dto.response.StatusCode;
-import com.sadiqov.tech_app_three.dto.response.UserResponseDto;
+import com.sadiqov.tech_app_three.dto.response.*;
 import com.sadiqov.tech_app_three.entity.TechUser;
 import com.sadiqov.tech_app_three.exception.NoSuchUserExits;
 import com.sadiqov.tech_app_three.exception.UserAlreadyExit;
@@ -16,6 +14,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +33,12 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     @Autowired
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    UserDetailsService userDetailsService;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
     public CommonResponse<?> saveUser(UserRequestDTO userRequestDTO) {
         dtoUtil.isValid(userRequestDTO);
@@ -75,9 +81,14 @@ public class UserService {
                                     + authenticationRequestDto.getPassword() + " is wrong.")
                             .build()).build()).build();
         }
-        return CommonResponse.builder().data(authenticationRequestDto).
+
+        UserDetails userDetails= userDetailsService.loadUserByUsername(authenticationRequestDto.getPin());
+
+        return CommonResponse.builder().
                 status(Status.builder().statusCode(StatusCode.SUCCES).
-                        message("Welcome to our Fin_App_Three").build()).build();
+                        message("Token was created successfully !!").build()).
+                data(AuthenticationResponseDto.builder().
+                        tokenForUser(jwtUtil.createToken(userDetails)).build()).build();
     }
 
 }
