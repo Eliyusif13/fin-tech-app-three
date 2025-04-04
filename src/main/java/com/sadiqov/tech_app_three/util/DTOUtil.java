@@ -30,8 +30,8 @@ public class DTOUtil {
 
     public void isValid(AuthenticationRequestDto authenticationRequestDto) {
 
-        checkDTOInput(authenticationRequestDto.getPassword());
         checkDTOInput(authenticationRequestDto.getPin());
+        checkDTOInput(authenticationRequestDto.getPassword());
     }
 
     public <T> void checkDTOInput(T t) {
