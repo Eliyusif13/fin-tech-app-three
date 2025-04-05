@@ -1,5 +1,6 @@
 package com.sadiqov.tech_app_three.config.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -9,11 +10,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 
 public class ApplicationSecurityConfig {
-
+@Autowired
+JwtFilter jwtFilter;
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity,
                                                        PasswordEncoder passwordEncoder,
@@ -34,6 +37,7 @@ public class ApplicationSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
         try {
+            httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
             return httpSecurity.
                     csrf().
                     disable()
