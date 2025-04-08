@@ -29,7 +29,7 @@ public class AccountService {
 
         return CommonResponse.builder().
                 status(Status.builder().
-                        statusCode(StatusCode.SUCCES).
+                        statusCode(StatusCode.SUCCESS).
                         message("Account successfully fetched")
                 .build()).data(AccountResponseDtoList.
                         entityDtoAccountList(user.get().getAccountList())).build();

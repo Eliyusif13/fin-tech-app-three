@@ -23,6 +23,8 @@ public class AccountResponseDto implements Serializable {
     Integer accountNo;
 
     public static AccountResponseDto entityDto(Account account){
+
+
         return AccountResponseDto.builder().balance(account.getBalance()).
                 currency(account.getCurrency())
                 .isActive(account.getIsActive())

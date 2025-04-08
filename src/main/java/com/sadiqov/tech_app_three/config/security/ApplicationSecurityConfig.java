@@ -37,7 +37,9 @@ JwtFilter jwtFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
         try {
+
             httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
             return httpSecurity.
                     csrf().
                     disable()

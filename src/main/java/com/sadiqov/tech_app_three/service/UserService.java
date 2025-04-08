@@ -61,7 +61,7 @@ public class UserService {
         user.addAccountToUser(userRequestDTO.getAccountRequestDTOList());
 
         return CommonResponse.builder().
-                status(Status.builder().statusCode(StatusCode.SUCCES)
+                status(Status.builder().statusCode(StatusCode.SUCCESS)
                         .message("User created Successfully !!!").build()).
                 data(UserResponseDto.entityResponse(userRepository.save(user))).build();
     }
@@ -85,7 +85,7 @@ public class UserService {
         UserDetails userDetails= userDetailsService.loadUserByUsername(authenticationRequestDto.getPin());
 
         return CommonResponse.builder().
-                status(Status.builder().statusCode(StatusCode.SUCCES).
+                status(Status.builder().statusCode(StatusCode.SUCCESS).
                         message("Token was created successfully !!").build()).
                 data(AuthenticationResponseDto.builder().
                         tokenForUser(jwtUtil.createToken(userDetails)).build()).build();

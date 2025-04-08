@@ -36,4 +36,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> noSuchUserExits(NoSuchUserExits noSuchUserExits) {
         return new ResponseEntity<>(noSuchUserExits.getCommonResponse(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(value = NoActiveAccount.class)
+    public ResponseEntity<?> noFoundActiveAccount(NoActiveAccount noActiveAccount) {
+        return new ResponseEntity<>(noActiveAccount.getCommonResponse(), HttpStatus.NOT_FOUND);
+    }
 }
