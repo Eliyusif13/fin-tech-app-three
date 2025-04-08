@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,9 +27,11 @@ public class JwtFilter extends OncePerRequestFilter {
     UserDetailsService userDetailsService;
 
     @Override
+
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        SecurityContextHolder.clearContext();
 
         String token = request.getHeader("token");
         if (Objects.nonNull(token) && !token.isEmpty()) {
