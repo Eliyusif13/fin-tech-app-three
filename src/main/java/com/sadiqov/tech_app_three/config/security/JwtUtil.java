@@ -41,7 +41,7 @@ public class JwtUtil {
                 .setClaims(claims) // Tokenin içində saxlanacaq əlavə məlumatlar
                 .setSubject(username) // Tokenin əsas subyekti (istifadəçi adı)
                 .setIssuedAt(new Date(System.currentTimeMillis())) // Tokenin yaradılma vaxtı
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5)) // 5 dəqiqə sonra vaxtı bitəcək
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // 5 dəqiqə sonra vaxtı bitəcək
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256) // HS256 alqoritmi ilə imzalanır
                 .compact(); // Tokeni string kimi qaytarır
     }
