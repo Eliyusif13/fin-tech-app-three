@@ -46,7 +46,7 @@ public class UserService {
             throw UserAlreadyExit.builder().commonResponse(CommonResponse.builder().
 
                     status(Status.builder().statusCode(StatusCode.USER_EXITS).
-                            message("User with pin" + userRequestDTO.getPin() +
+                            message("User with pin " + userRequestDTO.getPin() +
                                     " is Exits. Please enter a pin  that has not been registered before."
                             ).
                             build()).build()).build();
