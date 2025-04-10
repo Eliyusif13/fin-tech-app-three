@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class AccountService {
     @Autowired
     UserRepository userRepository;
 
+    @Transactional
     public CommonResponse<?> getAccount() {
         Optional<TechUser> user = userRepository.findBYPin(currentUser.getCurrentUser().getUsername());
 
@@ -43,6 +45,7 @@ public class AccountService {
 
     }
 
+    @Transactional
     public CommonResponse<?> account2account(AccountToAccountRequestDTO accountToAccountRequestDTO) {
         dtoUtil.isValid(accountToAccountRequestDTO);
 
