@@ -5,6 +5,7 @@ import com.sadiqov.tech_app_three.dto.response.*;
 import com.sadiqov.tech_app_three.entity.Account;
 import com.sadiqov.tech_app_three.entity.TechUser;
 import com.sadiqov.tech_app_three.exception.InvalidDTO;
+import com.sadiqov.tech_app_three.exception.InvalidToken;
 import com.sadiqov.tech_app_three.repository.AccountRepo;
 import com.sadiqov.tech_app_three.repository.UserRepository;
 import com.sadiqov.tech_app_three.util.CurrentUser;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -47,6 +49,8 @@ public class AccountService {
 
     @Transactional
     public CommonResponse<?> account2account(AccountToAccountRequestDTO accountToAccountRequestDTO) {
+        validateUserAndAccounts(accountToAccountRequestDTO);
+
         dtoUtil.isValid(accountToAccountRequestDTO);
 
         validateAccountToAccountRequest(accountToAccountRequestDTO);
@@ -60,50 +64,30 @@ public class AccountService {
             debitAccount = accountByDebit.get();
 
             if (!debitAccount.getIsActive()) {
-                throw InvalidDTO.builder().
-                        responseDTO(CommonResponse.builder().
-                                status(Status.builder().statusCode(StatusCode.NOT_ACTIVE_ACCOUNT).
-                                        message("Debit account is not active.!").
-                                        build()).build()).build();
+                throw exceptionMessage(StatusCode.NOT_ACTIVE_ACCOUNT, "Debit account is not active.!");
 
             }
             // Gonderilen meblegin , balansdan az olmamasını yoxxlamaq ucundur.
 
-            if (debitAccount.getBalance().compareTo(accountToAccountRequestDTO.getAmount()) <= 0) {
-                throw InvalidDTO.builder().
-                        responseDTO(CommonResponse.builder().
-                                status(Status.builder().statusCode(StatusCode.INVALID_BALANCE).
-                                        message("Balance is ot enough").
-                                        build()).build()).build();
+            if (debitAccount.getBalance().compareTo(accountToAccountRequestDTO.getAmount()) < 0) {
+                throw exceptionMessage(StatusCode.INVALID_BALANCE, "Balance is ot enough");
 
             }
             Optional<Account> accountByCredit = accountRepo.findByAccountNo(accountToAccountRequestDTO.getCreditAccount());
 
             if (accountByCredit.isPresent()) {
                 creditAccount = accountByCredit.get();
+
                 if (!creditAccount.getIsActive()) {
-                    throw InvalidDTO.builder().
-                            responseDTO(CommonResponse.builder().
-                                    status(Status.builder().statusCode(StatusCode.NOT_ACTIVE_ACCOUNT).
-                                            message("Credit account is not active.!").
-                                            build()).build()).build();
+                    throw exceptionMessage(StatusCode.NOT_ACTIVE_ACCOUNT, "Credit account is not active.!");
                 }
 
             } else {
-                throw InvalidDTO.builder().
-                        responseDTO(CommonResponse.builder().
-                                status(Status.builder().statusCode(StatusCode.NOT_PRESENT_ACCOUNT).
-                                        message("Credit account is not present.!").
-                                        build()).build()).build();
-
+                throw exceptionMessage(StatusCode.NOT_PRESENT_ACCOUNT, "Credit account is not present.!");
 
             }
         } else {
-            throw InvalidDTO.builder().
-                    responseDTO(CommonResponse.builder().
-                            status(Status.builder().statusCode(StatusCode.NOT_PRESENT_ACCOUNT).
-                                    message("Debit account is not present.!").
-                                    build()).build()).build();
+            throw exceptionMessage(StatusCode.NOT_PRESENT_ACCOUNT, "Debit account is not present.!");
 
         }
 
@@ -124,7 +108,22 @@ public class AccountService {
                         .build())).build();
     }
 
-    public void validateAccountToAccountRequest(AccountToAccountRequestDTO dto) {
+
+    private void validateUserAndAccounts(AccountToAccountRequestDTO accountToAccountRequestDTO) {
+        Optional<TechUser> user = userRepository.findBYPin(currentUser.getCurrentUser().getUsername());
+        if (user.isEmpty()) {
+            throw exceptionMessageToken(StatusCode.INVALID_TOKEN, "The token is not linked to this account. ");
+        }
+        TechUser techUser = user.get();
+        List<Account> accountList = techUser.getAccountList();
+
+        if (accountList.stream().noneMatch(account -> account.getAccountNo().equals(accountToAccountRequestDTO.getDebitAccount()))) {
+            ;
+            throw exceptionMessageToken(StatusCode.INVALID_TOKEN, "The token is not linked to this account. ");
+        }
+    }
+
+    private void validateAccountToAccountRequest(AccountToAccountRequestDTO dto) {
         dtoUtil.isValid(dto);
 
         if (dto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
@@ -150,5 +149,23 @@ public class AccountService {
                             .build())
                     .build();
         }
+    }
+
+    private InvalidDTO exceptionMessage(StatusCode statusCode, String message) {
+
+        return InvalidDTO.builder().
+                responseDTO(CommonResponse.builder().
+                        status(Status.builder().statusCode(statusCode).
+                                message(message).
+                                build()).build()).build();
+    }
+
+    private InvalidToken exceptionMessageToken(StatusCode statusCode, String message) {
+
+        return InvalidToken.builder().
+                commonResponse(CommonResponse.builder().
+                        status(Status.builder().statusCode(statusCode).
+                                message(message).
+                                build()).build()).build();
     }
 }
