@@ -41,4 +41,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> noFoundActiveAccount(NoActiveAccount noActiveAccount) {
         return new ResponseEntity<>(noActiveAccount.getCommonResponse(), HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(value = InvalidToken.class)
+    public ResponseEntity<?> invalidAccount(InvalidToken invalidToken) {
+        return new ResponseEntity<>(invalidToken.getCommonResponse(), HttpStatus.FORBIDDEN);
+    }
+
 }
