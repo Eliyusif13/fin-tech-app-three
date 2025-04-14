@@ -22,10 +22,15 @@ public class AccountResponseDtoList implements Serializable {
     List<AccountResponseDto> accountResponseDtoList;
 
     public static AccountResponseDtoList entityDtoAccountList(List<Account> accountList) {
-        accountList = accountList.stream().filter(Account::getIsActive).collect(Collectors.toList());
+        accountList = accountList.stream().
+                filter(Account::getIsActive).
+                collect(Collectors.toList());
+
         if (!accountList.isEmpty()) {
             List<AccountResponseDto> accountResponseList = new ArrayList<>();
-            accountList.forEach(account -> accountResponseList.add(AccountResponseDto.entityDto(account)));
+            accountList.forEach(account -> accountResponseList.
+                    add(AccountResponseDto.
+                            entityDto(account)));
 
             return AccountResponseDtoList.builder().
                     accountResponseDtoList(accountResponseList).build();
