@@ -11,5 +11,5 @@ public enum StatusCode {
     INVALID_BALANCE,
     NOT_PRESENT_ACCOUNT,
     INTERNAL_ERROR,
-    INVALID_TOKEN;
+    INVALID_TOKEN, Cbar_Error;
 }

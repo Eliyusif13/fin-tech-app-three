@@ -41,9 +41,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> noFoundActiveAccount(NoActiveAccount noActiveAccount) {
         return new ResponseEntity<>(noActiveAccount.getCommonResponse(), HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(value = InvalidToken.class)
     public ResponseEntity<?> invalidAccount(InvalidToken invalidToken) {
         return new ResponseEntity<>(invalidToken.getCommonResponse(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(value = CbarRestException.class)
+    public ResponseEntity<?> cbarRestError(CbarRestException cbarRestException) {
+        return new ResponseEntity<>(cbarRestException.getCommonResponse(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
