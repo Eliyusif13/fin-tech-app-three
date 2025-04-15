@@ -2,12 +2,16 @@ package com.sadiqov.tech_app_three.service;
 
 import com.sadiqov.tech_app_three.dto.request.AccountToAccountRequestDTO;
 import com.sadiqov.tech_app_three.dto.response.*;
+import com.sadiqov.tech_app_three.dto.response.mbdto.ValCursResponseDTO;
+import com.sadiqov.tech_app_three.dto.response.mbdto.ValuteResponseDTO;
 import com.sadiqov.tech_app_three.entity.Account;
 import com.sadiqov.tech_app_three.entity.TechUser;
 import com.sadiqov.tech_app_three.exception.InvalidDTO;
 import com.sadiqov.tech_app_three.exception.InvalidToken;
 import com.sadiqov.tech_app_three.repository.AccountRepo;
 import com.sadiqov.tech_app_three.repository.UserRepository;
+import com.sadiqov.tech_app_three.restclinet.CbarRestClinet;
+import com.sadiqov.tech_app_three.util.Currency;
 import com.sadiqov.tech_app_three.util.CurrentUser;
 import com.sadiqov.tech_app_three.util.DTOUtil;
 import lombok.AccessLevel;
@@ -15,9 +19,12 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -33,6 +40,9 @@ public class AccountService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    CbarRestClinet cbarRestClinet;
 
     @Transactional
     public CommonResponse<?> getAccount() {
@@ -90,12 +100,46 @@ public class AccountService {
             throw exceptionMessage(StatusCode.NOT_PRESENT_ACCOUNT, "Debit account is not present.!");
 
         }
+        if (!debitAccount.getCurrency().equals(creditAccount.getCurrency())) {
 
-        debitAccount.setBalance(debitAccount.getBalance().subtract(accountToAccountRequestDTO.getAmount()));
-        creditAccount.setBalance(creditAccount.getBalance().add(accountToAccountRequestDTO.getAmount()));
+            ValCursResponseDTO currency = cbarRestClinet.getCurrency();
+            currency.getValTypeList().forEach(valTypeResponseDTO -> {
+                List<ValuteResponseDTO> valuteList = valTypeResponseDTO.getValuteList();
+// run edenden sonra duzelis et
+                if (Objects.nonNull(valuteList) && !ObjectUtils.isEmpty(valuteList)) {
+                    valuteList.stream().filter(valuteResponseDTO ->
+                                    Objects.nonNull(valuteResponseDTO)
+                                            && !ObjectUtils.isEmpty(valuteResponseDTO)
+                                            && valuteResponseDTO.getCode().equals(debitAccount.getCurrency().toString())
+                                            && debitAccount.getCurrency().equals(Currency.USD))
+                            .findFirst().ifPresent(valuteResponseDTO -> {
+                                debitAccount.setBalance(debitAccount.getBalance().
+                                        subtract(accountToAccountRequestDTO.getAmount()));
 
-        accountRepo.save(debitAccount);
-        accountRepo.save(creditAccount);
+                                creditAccount.setBalance(creditAccount.getBalance().add(accountToAccountRequestDTO.getAmount()
+                                        .multiply(valuteResponseDTO.getValue())));
+                            });
+                    valuteList.stream().filter(valuteResponseDTO ->
+                                    Objects.nonNull(valuteResponseDTO)
+                                            &&   !ObjectUtils.isEmpty(valuteResponseDTO)
+                                            && !valuteResponseDTO.getCode().equals(debitAccount.getCurrency().toString())
+                                            && valuteResponseDTO.getCode().equals(Currency.USD.toString()))
+                            .findFirst().ifPresent(valuteResponseDTO -> {
+                                debitAccount.setBalance(debitAccount.getBalance().
+                                        subtract(accountToAccountRequestDTO.getAmount()));
+
+                                creditAccount.setBalance(creditAccount.getBalance().add(accountToAccountRequestDTO.getAmount()
+                                        .divide(valuteResponseDTO.getValue(), RoundingMode.DOWN)));
+                            });
+                }
+            });
+
+
+        } else {
+            debitAccount.setBalance(debitAccount.getBalance().subtract(accountToAccountRequestDTO.getAmount()));
+            creditAccount.setBalance(creditAccount.getBalance().add(accountToAccountRequestDTO.getAmount()));
+
+        }
 
         return CommonResponse.builder().status(Status.builder().
                         statusCode(StatusCode.SUCCESS).
@@ -159,6 +203,7 @@ public class AccountService {
                                 message(message).
                                 build()).build()).build();
     }
+
 
     private InvalidToken exceptionMessageToken(StatusCode statusCode, String message) {
 
