@@ -100,47 +100,16 @@ public class AccountService {
             throw exceptionMessage(StatusCode.NOT_PRESENT_ACCOUNT, "Debit account is not present.!");
 
         }
+
         if (!debitAccount.getCurrency().equals(creditAccount.getCurrency())) {
 
-            ValCursResponseDTO currency = cbarRestClinet.getCurrency();
-            currency.getValTypeList().forEach(valTypeResponseDTO -> {
-                List<ValuteResponseDTO> valuteList = valTypeResponseDTO.getValuteList();
-// run edenden sonra duzelis et
-                if (Objects.nonNull(valuteList) && !ObjectUtils.isEmpty(valuteList)) {
-                    valuteList.stream().filter(valuteResponseDTO ->
-                                    Objects.nonNull(valuteResponseDTO)
-                                            && !ObjectUtils.isEmpty(valuteResponseDTO)
-                                            && valuteResponseDTO.getCode().equals(debitAccount.getCurrency().toString())
-                                            && debitAccount.getCurrency().equals(Currency.USD))
-                            .findFirst().ifPresent(valuteResponseDTO -> {
-                                debitAccount.setBalance(debitAccount.getBalance().
-                                        subtract(accountToAccountRequestDTO.getAmount()));
-
-                                creditAccount.setBalance(creditAccount.getBalance().add(accountToAccountRequestDTO.getAmount()
-                                        .multiply(valuteResponseDTO.getValue())));
-                            });
-                    valuteList.stream().filter(valuteResponseDTO ->
-                                    Objects.nonNull(valuteResponseDTO)
-                                            &&   !ObjectUtils.isEmpty(valuteResponseDTO)
-                                            && !valuteResponseDTO.getCode().equals(debitAccount.getCurrency().toString())
-                                            && valuteResponseDTO.getCode().equals(Currency.USD.toString()))
-                            .findFirst().ifPresent(valuteResponseDTO -> {
-                                debitAccount.setBalance(debitAccount.getBalance().
-                                        subtract(accountToAccountRequestDTO.getAmount()));
-
-                                creditAccount.setBalance(creditAccount.getBalance().add(accountToAccountRequestDTO.getAmount()
-                                        .divide(valuteResponseDTO.getValue(), RoundingMode.DOWN)));
-                            });
-                }
-            });
+            handleCurrencyConversion(debitAccount, creditAccount, accountToAccountRequestDTO);
 
 
         } else {
             debitAccount.setBalance(debitAccount.getBalance().subtract(accountToAccountRequestDTO.getAmount()));
             creditAccount.setBalance(creditAccount.getBalance().add(accountToAccountRequestDTO.getAmount()));
-
         }
-
         return CommonResponse.builder().status(Status.builder().
                         statusCode(StatusCode.SUCCESS).
                         message("Money transfer completed successfully...!").build()).
@@ -181,6 +150,7 @@ public class AccountService {
                     .build();
         }
 
+
         if (dto.getCreditAccount().equals(dto.getDebitAccount())) {
             throw InvalidDTO.builder()
                     .responseDTO(CommonResponse.builder()
@@ -194,6 +164,42 @@ public class AccountService {
                     .build();
         }
     }
+
+    private void handleCurrencyConversion(Account debitAccount, Account creditAccount, AccountToAccountRequestDTO dto) {
+        ValCursResponseDTO currency = cbarRestClinet.getCurrency();
+        currency.getValTypeList().forEach(valTypeResponseDTO -> {
+            List<ValuteResponseDTO> valuteList = valTypeResponseDTO.getValuteList();
+
+            if (Objects.nonNull(valuteList) && !ObjectUtils.isEmpty(valuteList)) {
+
+                valuteList.stream().filter(valuteResponseDTO ->
+                                Objects.nonNull(valuteResponseDTO)
+                                        && !ObjectUtils.isEmpty(valuteResponseDTO)
+                                        && valuteResponseDTO.getCode().equals(debitAccount.getCurrency().toString())
+                                        && (debitAccount.getCurrency().equals(Currency.USD) || debitAccount.getCurrency().equals(Currency.EUR)))
+                        .findFirst().ifPresent(valuteResponseDTO -> {
+                            // Balansı azaldırıq və kredit hesaba AZN olaraq əlavə edirik
+                            BigDecimal amountInAzn = dto.getAmount().multiply(valuteResponseDTO.getValue());
+                            debitAccount.setBalance(debitAccount.getBalance().subtract(dto.getAmount()));
+                            creditAccount.setBalance(creditAccount.getBalance().add(amountInAzn));
+                        });
+
+                valuteList.stream().filter(valuteResponseDTO ->
+                                Objects.nonNull(valuteResponseDTO)
+                                        && !ObjectUtils.isEmpty(valuteResponseDTO)
+                                        && !valuteResponseDTO.getCode().equals(debitAccount.getCurrency().toString())
+                                        && (valuteResponseDTO.getCode().equals(Currency.USD.toString())
+                                        || valuteResponseDTO.getCode().equals(Currency.EUR.toString())))
+                        .findFirst().ifPresent(valuteResponseDTO -> {
+                            // Balansı bir də azaldmırıq! Yalnız kredit hesaba çevrilmiş məbləği əlavə edirik
+                            BigDecimal amountInCreditCurrency = dto.getAmount().divide(valuteResponseDTO.getValue(), RoundingMode.DOWN);
+                            creditAccount.setBalance(creditAccount.getBalance().add(amountInCreditCurrency));
+                        });
+            }
+        });
+    }
+
+
 
     private InvalidDTO exceptionMessage(StatusCode statusCode, String message) {
 
