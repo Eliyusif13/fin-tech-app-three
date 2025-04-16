@@ -165,6 +165,7 @@ public class AccountService {
         }
     }
 
+
     private void handleCurrencyConversion(Account debitAccount, Account creditAccount, AccountToAccountRequestDTO dto) {
         ValCursResponseDTO currency = cbarRestClinet.getCurrency();
         currency.getValTypeList().forEach(valTypeResponseDTO -> {
@@ -172,33 +173,36 @@ public class AccountService {
 
             if (Objects.nonNull(valuteList) && !ObjectUtils.isEmpty(valuteList)) {
 
+                // Əgər debit hesabın valyutası USD-dirsə və kredit hesabın valyutası AZN-dirsə
                 valuteList.stream().filter(valuteResponseDTO ->
                                 Objects.nonNull(valuteResponseDTO)
                                         && !ObjectUtils.isEmpty(valuteResponseDTO)
                                         && valuteResponseDTO.getCode().equals(debitAccount.getCurrency().toString())
-                                        && (debitAccount.getCurrency().equals(Currency.USD) || debitAccount.getCurrency().equals(Currency.EUR)))
+                                        && debitAccount.getCurrency().equals(Currency.USD))
                         .findFirst().ifPresent(valuteResponseDTO -> {
-                            // Balansı azaldırıq və kredit hesaba AZN olaraq əlavə edirik
-                            BigDecimal amountInAzn = dto.getAmount().multiply(valuteResponseDTO.getValue());
-                            debitAccount.setBalance(debitAccount.getBalance().subtract(dto.getAmount()));
-                            creditAccount.setBalance(creditAccount.getBalance().add(amountInAzn));
+                            debitAccount.setBalance(debitAccount.getBalance()
+                                    .subtract(dto.getAmount()));
+
+                            creditAccount.setBalance(creditAccount.getBalance().add(
+                                    dto.getAmount().multiply(valuteResponseDTO.getValue())));
                         });
 
+                // Əgər debit hesab AZN-dirsə və kredit hesab USD-dirsə
                 valuteList.stream().filter(valuteResponseDTO ->
                                 Objects.nonNull(valuteResponseDTO)
                                         && !ObjectUtils.isEmpty(valuteResponseDTO)
                                         && !valuteResponseDTO.getCode().equals(debitAccount.getCurrency().toString())
-                                        && (valuteResponseDTO.getCode().equals(Currency.USD.toString())
-                                        || valuteResponseDTO.getCode().equals(Currency.EUR.toString())))
+                                        && valuteResponseDTO.getCode().equals(Currency.USD.toString()))
                         .findFirst().ifPresent(valuteResponseDTO -> {
-                            // Balansı bir də azaldmırıq! Yalnız kredit hesaba çevrilmiş məbləği əlavə edirik
-                            BigDecimal amountInCreditCurrency = dto.getAmount().divide(valuteResponseDTO.getValue(), RoundingMode.DOWN);
-                            creditAccount.setBalance(creditAccount.getBalance().add(amountInCreditCurrency));
+                            debitAccount.setBalance(debitAccount.getBalance()
+                                    .subtract(dto.getAmount()));
+
+                            creditAccount.setBalance(creditAccount.getBalance().add(
+                                    dto.getAmount().divide(valuteResponseDTO.getValue(), RoundingMode.DOWN)));
                         });
             }
         });
     }
-
 
 
     private InvalidDTO exceptionMessage(StatusCode statusCode, String message) {
