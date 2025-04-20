@@ -27,7 +27,11 @@ public class JwtFilter extends OncePerRequestFilter {
     UserDetailsService userDetailsService;
 
     @Override
-
+/*
+ * Bu metod HTTP sorğusundan JWT (JSON Web Token) çıxarır və onun etibarlılığını yoxlayır.
+ * Əgər token etibarlıdırsa, istifadəçi məlumatları təhlükəsizlik kontekstinə əlavə olunur.
+ * Əks halda, sorğu rədd edilir və müvafiq cavab qaytarılır.
+ */
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
