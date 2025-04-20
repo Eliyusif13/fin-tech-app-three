@@ -29,7 +29,7 @@ public class JwtUtil {
     // UserDetails obyektindən istifadə edərək JWT token yaradır
     public String createToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("test", "test"); // Test üçün əlavə edilmiş məlumat
+        claims.put("test", "test"); // Test üçün əlavə edilmiş məlumat, istofadeci istese ("role","admin") kimide yaza biler
         return generateToken(claims, userDetails.getUsername());
     }
 
