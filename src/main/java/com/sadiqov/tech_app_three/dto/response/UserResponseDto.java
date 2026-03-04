@@ -36,6 +36,7 @@ public class UserResponseDto implements Serializable {
                         balance(a.getBalance()).
                         currency(a.getCurrency()).
                         isActive(a.getIsActive()).build()));
+
         return UserResponseDto.builder().
                 id(user.getId()).
                 name(user.getName()).

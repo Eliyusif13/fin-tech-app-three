@@ -1,11 +1,8 @@
 package com.sadiqov.tech_app_three.dto.request;
 
 import com.sadiqov.tech_app_three.util.Currency;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 

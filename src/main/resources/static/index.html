@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tech App — Simple Frontend</title>
+  <!-- Tailwind CDN for simplicity -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-6xl mx-auto p-6">
+    <header class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-semibold">Tech App — Frontend</h1>
+      <div id="auth-area" class="flex items-center space-x-3">
+        <div id="logged-as" class="text-sm text-gray-600"></div>
+        <button id="logout-btn" class="hidden bg-red-500 text-white px-3 py-1 rounded">Logout</button>
+        <!-- API base input (allows preview servers to set backend base URL) -->
+        <div class="flex items-center space-x-2">
+          <input id="api-base-input" class="text-sm border rounded px-2 py-1" style="width:240px" title="Backend base URL" />
+          <button id="api-base-save" class="text-sm bg-gray-200 px-2 py-1 rounded">Save</button>
+          <button id="api-base-reset" class="text-sm text-gray-600 underline">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Login / Register -->
+      <section class="col-span-1 bg-white p-4 rounded shadow">
+        <h2 class="font-medium mb-3">Login</h2>
+        <form id="login-form" class="space-y-3">
+          <div>
+            <label class="block text-sm text-gray-600">PIN</label>
+            <input id="pin" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Password</label>
+            <input id="password" type="password" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="flex items-center space-x-2">
+            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Login</button>
+            <button id="show-register" type="button" class="text-sm text-blue-600 underline">Register</button>
+          </div>
+        </form>
+
+        <form id="register-form" class="space-y-3 mt-4 hidden">
+          <h3 class="font-medium">Register (quick)</h3>
+          <div>
+            <label class="block text-sm text-gray-600">Name</label>
+            <input id="reg-name" class="w-full border rounded px-2 py-1" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Surname</label>
+            <input id="reg-surname" class="w-full border rounded px-2 py-1" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">PIN</label>
+            <input id="reg-pin" class="w-full border rounded px-2 py-1" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Password</label>
+            <input id="reg-password" type="password" class="w-full border rounded px-2 py-1" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Initial Account No</label>
+            <input id="reg-account-no" type="number" class="w-full border rounded px-2 py-1" />
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Initial Balance</label>
+            <input id="reg-balance" type="number" step="0.01" class="w-full border rounded px-2 py-1" />
+          </div>
+          <div>
+            <label class="inline-flex items-center">
+              <input id="reg-active" type="checkbox" checked class="mr-2" /> Active
+            </label>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Currency (e.g., AZN, USD)</label>
+            <input id="reg-currency" class="w-full border rounded px-2 py-1" value="AZN" />
+          </div>
+          <div class="flex items-center space-x-2">
+            <button id="register-btn" type="button" class="bg-green-600 text-white px-3 py-1 rounded">Register</button>
+            <button id="hide-register" type="button" class="text-sm text-gray-600">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Accounts -->
+      <section class="col-span-1 lg:col-span-2 bg-white p-4 rounded shadow">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-medium">Accounts</h2>
+          <div class="flex items-center space-x-2">
+            <button id="refresh-accounts" class="text-sm text-gray-600 underline">Refresh</button>
+          </div>
+        </div>
+
+        <div id="accounts-empty" class="text-sm text-gray-500">Login to see your accounts.</div>
+        <div class="overflow-auto">
+          <table id="accounts-table" class="w-full text-sm table-auto hidden">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="px-3 py-2 text-left">Account No</th>
+                <th class="px-3 py-2 text-left">Balance</th>
+                <th class="px-3 py-2 text-left">Currency</th>
+                <th class="px-3 py-2 text-left">Active</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- Transfer form -->
+        <div id="transfer-card" class="mt-6 p-3 border rounded hidden">
+          <h3 class="font-medium mb-2">Transfer</h3>
+          <form id="transfer-form" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                  <label class="block text-sm text-gray-600">From (debit account no)</label>
+                  <input id="debit-account" type="number" class="w-full border rounded px-2 py-1" placeholder="Göndərən hesab no" />
+              </div>
+
+              <div>
+                  <label class="block text-sm text-gray-600">To (credit account no)</label>
+                  <input id="credit-account" type="number" class="w-full border rounded px-2 py-1" placeholder="Alan hesab no" />
+              </div>
+
+
+            <div>
+              <label class="block text-sm text-gray-600">Amount</label>
+              <input id="transfer-amount" type="number" step="0.01" class="w-full border rounded px-2 py-1" />
+            </div>
+
+            <div class="md:col-span-3 mt-2">
+              <button type="submit" class="bg-indigo-600 text-white px-3 py-1 rounded">Send Transfer</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="transfer-result" class="mt-3"></div>
+      </section>
+
+      <!-- Currencies -->
+      <section class="col-span-1 bg-white p-4 rounded shadow">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-medium">Currencies</h2>
+          <button id="refresh-currencies" class="text-sm text-gray-600 underline">Refresh</button>
+        </div>
+        <div class="overflow-auto max-h-96">
+          <table id="currency-table" class="w-full text-sm table-auto hidden">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="px-2 py-1 text-left">Code</th>
+                <th class="px-2 py-1 text-left">Name</th>
+                <th class="px-2 py-1 text-left">Nominal</th>
+                <th class="px-2 py-1 text-left">Value</th>
+                <th class="px-2 py-1 text-left">Type</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="message" class="mt-6"></div>
+
+    <footer class="mt-6 text-xs text-gray-500">This frontend is a minimal demo that calls the backend at /api/v1/* and stores the JWT token in localStorage under <code>token</code>. The backend expects the header name "token" (not Authorization).</footer>
+  </div>
+
+<script>
+  // Config: API base URL (can be changed in UI). Default to localhost:8080 which is Spring Boot default.
+  let API_BASE = localStorage.getItem('apiBase') || 'http://localhost:8080';
+
+  // Simple helper to show messages
+  function showMessage(text, type='info'){
+    const el = document.getElementById('message');
+    el.innerHTML = `<div class="p-3 rounded ${type==='error'? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${text}</div>`;
+    setTimeout(()=>{ el.innerHTML=''; }, 6000);
+  }
+
+  // Update API base UI input
+  function updateApiBaseInput(){
+    const inp = document.getElementById('api-base-input');
+    if(inp) inp.value = API_BASE;
+  }
+
+  // Save API base from UI
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const saveBtn = document.getElementById('api-base-save');
+    const resetBtn = document.getElementById('api-base-reset');
+    updateApiBaseInput();
+    if(saveBtn){
+      saveBtn.addEventListener('click', ()=>{
+        const val = document.getElementById('api-base-input').value.trim();
+        if(val){
+          API_BASE = val.replace(/\/$/, '');
+          localStorage.setItem('apiBase', API_BASE);
+          showMessage('API base saved: ' + API_BASE);
+        }
+      });
+    }
+    if(resetBtn){
+      resetBtn.addEventListener('click', ()=>{
+        localStorage.removeItem('apiBase');
+        API_BASE = 'http://localhost:8080';
+        updateApiBaseInput();
+        showMessage('API base reset to ' + API_BASE);
+      });
+    }
+  });
+
+  // API helper that inserts header 'token' from localStorage for protected endpoints
+  async function apiFetch(path, opts={}){
+    const headers = opts.headers||{};
+    // build URL: if path starts with http(s) use as-is, else prefix with API_BASE
+    const url = (/^https?:\/\//i.test(path)) ? path : (API_BASE + (path.startsWith('/') ? path : '/' + path));
+
+    if(!headers['Content-Type'] && !(opts.body instanceof FormData)) headers['Content-Type'] = 'application/json';
+    const token = localStorage.getItem('token');
+    if(token) headers['token'] = token; // backend expects header name 'token'
+
+    const res = await fetch(url, {...opts, headers});
+    const contentType = res.headers.get('content-type') || '';
+    const text = await res.text();
+
+    let json = null;
+    if(contentType.includes('application/json')){
+      try{ json = text ? JSON.parse(text) : null; }catch(e){ console.error('Failed to parse JSON', e, text); }
+    }
+
+    if(!res.ok){
+      // Handle common case: IDE preview or wrong host returns HTML 404 page (non-json)
+      if(!json){
+        const shortText = text ? (text.length>200 ? text.slice(0,200)+'...' : text) : res.statusText;
+        const msg = `Request failed: ${res.status} ${res.statusText}. Response: ${shortText}.\nUsing API base: ${API_BASE}`;
+        // If it looks like an IDE preview/html 404, add a helpful action in UI to switch to localhost:8080
+        if((shortText && shortText.toLowerCase().includes('404 not found')) || (window.location.search && window.location.search.includes('_ijt'))){
+          const hint = document.getElementById('message');
+          if(hint){
+            hint.innerHTML = `<div class="p-3 rounded bg-yellow-100 text-yellow-700">${msg} <div class=\"mt-2\"><button id=\"use-localhost-btn\" class=\"bg-blue-600 text-white px-2 py-1 rounded\">Use http://localhost:8080</button></div></div>`;
+            const btn = document.getElementById('use-localhost-btn');
+            if(btn){
+              btn.addEventListener('click', ()=>{
+                API_BASE = 'http://localhost:8080';
+                localStorage.setItem('apiBase', API_BASE);
+                updateApiBaseInput();
+                showMessage('API base set to '+API_BASE);
+              });
+            }
+          }
+        }
+        throw new Error(msg);
+      }
+      // JSON error: try extract backend message
+      const msg = json && json.status && json.status.message ? json.status.message : (json && json.message) || res.statusText;
+      throw new Error(msg || 'Request failed');
+    }
+    return json;
+  }
+
+  // Login logic
+  document.getElementById('login-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const pin = document.getElementById('pin').value.trim();
+    const password = document.getElementById('password').value;
+    if(!pin || !password) return showMessage('Enter pin and password', 'error');
+    try{
+      const resp = await apiFetch('/api/v1/login', {method:'POST', body: JSON.stringify({pin, password})});
+      const token = resp && resp.data && resp.data.tokenForUser;
+      if(!token) return showMessage('No token in response', 'error');
+      localStorage.setItem('token', token);
+      showLoggedIn(pin);
+      showMessage('Login successful');
+      await loadAccounts();
+      await loadCurrencies();
+    }catch(err){
+      console.error(err);
+      showMessage(err.message || 'Login failed', 'error');
+    }
+  });
+
+  function showLoggedIn(pin){
+    document.getElementById('logged-as').textContent = pin ? `Logged as: ${pin}` : '';
+    document.getElementById('logout-btn').classList.remove('hidden');
+    document.getElementById('transfer-card').classList.remove('hidden');
+    document.getElementById('accounts-empty').classList.add('hidden');
+  }
+  function hideLogged(){
+    document.getElementById('logged-as').textContent = '';
+    document.getElementById('logout-btn').classList.add('hidden');
+    document.getElementById('transfer-card').classList.add('hidden');
+    document.getElementById('accounts-empty').classList.remove('hidden');
+    document.getElementById('accounts-table').classList.add('hidden');
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', ()=>{
+    localStorage.removeItem('token');
+    hideLogged();
+    showMessage('Logged out');
+  });
+
+  // Register toggle
+  document.getElementById('show-register').addEventListener('click', ()=>{
+    document.getElementById('register-form').classList.remove('hidden');
+  });
+  document.getElementById('hide-register').addEventListener('click', ()=>{
+    document.getElementById('register-form').classList.add('hidden');
+  });
+
+  // Register (simple)
+  document.getElementById('register-btn').addEventListener('click', async ()=>{
+    const name = document.getElementById('reg-name').value.trim();
+    const surName = document.getElementById('reg-surname').value.trim();
+    const pin = document.getElementById('reg-pin').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const accountNo = parseInt(document.getElementById('reg-account-no').value,10) || null;
+    const balance = parseFloat(document.getElementById('reg-balance').value) || 0;
+    const isActive = document.getElementById('reg-active').checked;
+    const currency = document.getElementById('reg-currency').value || 'AZN';
+
+    if(!name||!surName||!pin||!password||!accountNo){
+      return showMessage('Please fill required register fields', 'error');
+    }
+    const body = {
+      name, surName, pin, password,
+      accountRequestDTOList: [{ accountNo, balance, isActive, currency }]
+    };
+    try{
+      const resp = await apiFetch('/api/v1/register', {method:'POST', body: JSON.stringify(body)});
+      showMessage(resp && resp.status && resp.status.message ? resp.status.message : 'Registered');
+      document.getElementById('register-form').classList.add('hidden');
+    }catch(err){
+      showMessage(err.message || 'Register failed', 'error');
+    }
+  });
+
+  // Load accounts
+  async function loadAccounts(){
+    try{
+      const resp = await apiFetch('/api/v1/account', {method:'GET'});
+      const list = resp && resp.data && resp.data.accountResponseDtoList ? resp.data.accountResponseDtoList : [];
+      renderAccounts(list);
+    }catch(err){
+      console.error(err);
+      showMessage(err.message || 'Failed to load accounts', 'error');
+      // if invalid token, clear login
+      if(err.message && err.message.toLowerCase().includes('token')){
+        localStorage.removeItem('token');
+        hideLogged();
+      }
+    }
+  }
+
+  function renderAccounts(list) {
+      const table = document.getElementById('accounts-table');
+      const tbody = table.querySelector('tbody');
+      tbody.innerHTML = '';
+
+      if (!list || list.length === 0) {
+          table.classList.add('hidden');
+          document.getElementById('accounts-empty').classList.remove('hidden');
+          document.getElementById('transfer-card').classList.add('hidden');
+          return;
+      }
+
+      // Populate accounts table rows
+      list.forEach(acc => {
+          const tr = document.createElement('tr');
+          // use textContent or templating that avoids script injection
+          tr.innerHTML = `
+      <td class="px-3 py-2">${acc.accountNo}</td>
+      <td class="px-3 py-2">${acc.balance}</td>
+      <td class="px-3 py-2">${acc.currency}</td>
+      <td class="px-3 py-2">${acc.isActive}</td>
+    `;
+          tbody.appendChild(tr);
+      });
+
+      table.classList.remove('hidden');
+      document.getElementById('accounts-empty').classList.add('hidden');
+
+      // Safely populate debit-account only if it's a <select>
+      const debitEl = document.getElementById('debit-account');
+      if (debitEl && debitEl.tagName && debitEl.tagName.toLowerCase() === 'select') {
+          // Clear existing options
+          debitEl.innerHTML = '';
+          list.forEach(acc => {
+              if (acc.isActive) {
+                  const opt = document.createElement('option');
+                  opt.value = acc.accountNo;
+                  opt.textContent = `${acc.accountNo} — ${acc.currency} (${acc.balance})`;
+                  debitEl.appendChild(opt);
+              }
+          });
+      }
+  }
+
+  // Transfer submit
+  document.getElementById('transfer-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const debitAccount = parseInt(document.getElementById('debit-account').value,10);
+    const creditAccount = parseInt(document.getElementById('credit-account').value,10);
+    const amount = parseFloat(document.getElementById('transfer-amount').value);
+    if(!debitAccount || !creditAccount || !amount || amount<=0) return showMessage('Enter valid transfer details', 'error');
+    try{
+      const resp = await apiFetch('/api/v1/transfer', {method:'POST', body: JSON.stringify({debitAccount, creditAccount, amount})});
+      const msg = resp && resp.status && resp.status.message ? resp.status.message : 'Transfer done';
+      showMessage(msg);
+      await loadAccounts();
+    }catch(err){
+      console.error(err);
+      showMessage(err.message || 'Transfer failed', 'error');
+    }
+  });
+
+  // Load currencies
+  async function loadCurrencies(){
+    try{
+      const resp = await apiFetch('/api/v1/currency', {method:'GET'});
+      const dto = resp && resp.data ? resp.data : null;
+      const rows = [];
+      if(dto && dto.valTypeList){
+        dto.valTypeList.forEach(type => {
+          const t = type.type || '';
+          if(type.valuteList && Array.isArray(type.valuteList)){
+            type.valuteList.forEach(val => rows.push({type: t, code: val.code, name: val.name, nominal: val.nominal, value: val.value}));
+          }
+        });
+      }
+      renderCurrencies(rows);
+    }catch(err){
+      console.error(err);
+      showMessage(err.message || 'Failed to load currencies', 'error');
+    }
+  }
+
+  function renderCurrencies(rows){
+    const table = document.getElementById('currency-table');
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+    if(!rows || rows.length===0){
+      table.classList.add('hidden');
+      return;
+    }
+    rows.forEach(r=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="px-2 py-1">${r.code}</td>
+        <td class="px-2 py-1">${r.name}</td>
+        <td class="px-2 py-1">${r.nominal}</td>
+        <td class="px-2 py-1">${r.value}</td>
+        <td class="px-2 py-1">${r.type}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    table.classList.remove('hidden');
+  }
+
+  // Refresh buttons
+  document.getElementById('refresh-accounts').addEventListener('click', ()=> loadAccounts());
+  document.getElementById('refresh-currencies').addEventListener('click', ()=> loadCurrencies());
+
+  // On load: if token present, mark logged and fetch data
+  (async function init(){
+    updateApiBaseInput();
+    const token = localStorage.getItem('token');
+    if(token){
+      // we don't know pin; backend token contains username(pin) but safer to show masked value
+      showLoggedIn('');
+      await loadAccounts();
+    } else {
+      hideLogged();
+    }
+    // always load currencies (public endpoint)
+    await loadCurrencies();
+  })();
+</script>
+</body>
+</html>

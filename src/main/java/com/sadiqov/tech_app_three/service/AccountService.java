@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -77,7 +76,6 @@ public class AccountService {
                 throw exceptionMessage(StatusCode.NOT_ACTIVE_ACCOUNT, "Debit account is not active.!");
 
             }
-            // Gonderilen meblegin , balansdan az olmamasını yoxxlamaq ucundur.
 
             if (debitAccount.getBalance().compareTo(accountToAccountRequestDTO.getAmount()) < 0) {
                 throw exceptionMessage(StatusCode.INVALID_BALANCE, "Balance is ot enough");

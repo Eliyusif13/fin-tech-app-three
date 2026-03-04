@@ -1,12 +1,15 @@
 package com.sadiqov.tech_app_three.service;
 
 import com.sadiqov.tech_app_three.config.security.JwtUtil;
+import com.sadiqov.tech_app_three.dto.request.AccountRequestDTO;
 import com.sadiqov.tech_app_three.dto.request.AuthenticationRequestDto;
 import com.sadiqov.tech_app_three.dto.request.UserRequestDTO;
 import com.sadiqov.tech_app_three.dto.response.*;
+import com.sadiqov.tech_app_three.entity.Account;
 import com.sadiqov.tech_app_three.entity.TechUser;
 import com.sadiqov.tech_app_three.exception.NoSuchUserExits;
 import com.sadiqov.tech_app_three.exception.UserAlreadyExit;
+import com.sadiqov.tech_app_three.repository.AccountRepo;
 import com.sadiqov.tech_app_three.repository.UserRepository;
 import com.sadiqov.tech_app_three.util.DTOUtil;
 import lombok.AccessLevel;
@@ -19,6 +22,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService {
@@ -28,6 +33,7 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -40,11 +46,12 @@ public class UserService {
     @Autowired
     JwtUtil jwtUtil;
 
+
     public CommonResponse<?> saveUser(UserRequestDTO userRequestDTO) {
         dtoUtil.isValid(userRequestDTO);
         if (userRepository.findBYPin(userRequestDTO.getPin()).isPresent()) {
-            throw UserAlreadyExit.builder().commonResponse(CommonResponse.builder().
 
+            throw UserAlreadyExit.builder().commonResponse(CommonResponse.builder().
                     status(Status.builder().statusCode(StatusCode.USER_EXITS).
                             message("User with pin " + userRequestDTO.getPin() +
                                     " is Exits. Please enter a pin  that has not been registered before."
@@ -59,6 +66,8 @@ public class UserService {
                 .pin(userRequestDTO.getPin()).role("ROLE_USER").build();
 
         user.addAccountToUser(userRequestDTO.getAccountRequestDTOList());
+
+
 
         return CommonResponse.builder().
                 status(Status.builder().statusCode(StatusCode.SUCCESS)
@@ -82,7 +91,7 @@ public class UserService {
                             .build()).build()).build();
         }
 
-        UserDetails userDetails= userDetailsService.loadUserByUsername(authenticationRequestDto.getPin());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequestDto.getPin());
 
         return CommonResponse.builder().
                 status(Status.builder().statusCode(StatusCode.SUCCESS).
