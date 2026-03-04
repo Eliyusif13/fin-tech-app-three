@@ -19,6 +19,9 @@
           <input id="api-base-input" class="text-sm border rounded px-2 py-1" style="width:240px" title="Backend base URL" />
           <button id="api-base-save" class="text-sm bg-gray-200 px-2 py-1 rounded">Save</button>
           <button id="api-base-reset" class="text-sm text-gray-600 underline">Reset</button>
+          <!-- Debug buttons -->
+          <button id="debug-ping" class="text-sm bg-yellow-200 px-2 py-1 rounded">Ping</button>
+          <button id="debug-headers" class="text-sm bg-yellow-200 px-2 py-1 rounded">Headers</button>
         </div>
       </div>
     </header>
@@ -215,7 +218,8 @@
 
     if(!headers['Content-Type'] && !(opts.body instanceof FormData)) headers['Content-Type'] = 'application/json';
     const token = localStorage.getItem('token');
-    if(token) headers['token'] = token; // backend expects header name 'token'
+    // Attach token only when opts.auth !== false (default: require auth)
+    if(token && opts.auth !== false) headers['token'] = token; // backend expects header name 'token'
 
     const res = await fetch(url, {...opts, headers});
     const contentType = res.headers.get('content-type') || '';
@@ -263,7 +267,7 @@
     const password = document.getElementById('password').value;
     if(!pin || !password) return showMessage('Enter pin and password', 'error');
     try{
-      const resp = await apiFetch('/api/v1/login', {method:'POST', body: JSON.stringify({pin, password})});
+      const resp = await apiFetch('/api/v1/login', {method:'POST', body: JSON.stringify({pin, password}), auth: false});
       const token = resp && resp.data && resp.data.tokenForUser;
       if(!token) return showMessage('No token in response', 'error');
       localStorage.setItem('token', token);
@@ -324,7 +328,7 @@
       accountRequestDTOList: [{ accountNo, balance, isActive, currency }]
     };
     try{
-      const resp = await apiFetch('/api/v1/register', {method:'POST', body: JSON.stringify(body)});
+      const resp = await apiFetch('/api/v1/register', {method:'POST', body: JSON.stringify(body), auth: false});
       showMessage(resp && resp.status && resp.status.message ? resp.status.message : 'Registered');
       document.getElementById('register-form').classList.add('hidden');
     }catch(err){
@@ -335,7 +339,7 @@
   // Load accounts
   async function loadAccounts(){
     try{
-      const resp = await apiFetch('/api/v1/account', {method:'GET'});
+      const resp = await apiFetch('/api/v1/account', {method:'GET', auth: true});
       const list = resp && resp.data && resp.data.accountResponseDtoList ? resp.data.accountResponseDtoList : [];
       renderAccounts(list);
     }catch(err){
@@ -401,7 +405,7 @@
     const amount = parseFloat(document.getElementById('transfer-amount').value);
     if(!debitAccount || !creditAccount || !amount || amount<=0) return showMessage('Enter valid transfer details', 'error');
     try{
-      const resp = await apiFetch('/api/v1/transfer', {method:'POST', body: JSON.stringify({debitAccount, creditAccount, amount})});
+      const resp = await apiFetch('/api/v1/transfer', {method:'POST', body: JSON.stringify({debitAccount, creditAccount, amount}), auth: true});
       const msg = resp && resp.status && resp.status.message ? resp.status.message : 'Transfer done';
       showMessage(msg);
       await loadAccounts();
@@ -414,7 +418,7 @@
   // Load currencies
   async function loadCurrencies(){
     try{
-      const resp = await apiFetch('/api/v1/currency', {method:'GET'});
+      const resp = await apiFetch('/api/v1/currency', {method:'GET', auth: false});
       const dto = resp && resp.data ? resp.data : null;
       const rows = [];
       if(dto && dto.valTypeList){
@@ -457,6 +461,25 @@
   // Refresh buttons
   document.getElementById('refresh-accounts').addEventListener('click', ()=> loadAccounts());
   document.getElementById('refresh-currencies').addEventListener('click', ()=> loadCurrencies());
+
+  // Debug buttons
+  document.getElementById('debug-ping').addEventListener('click', async ()=>{
+    try{
+      const resp = await apiFetch('/debug/ping', {method:'GET', auth:false});
+      showMessage('Debug ping response: ' + JSON.stringify(resp));
+    }catch(err){
+      showMessage('Debug ping failed: ' + err.message, 'error');
+    }
+  });
+
+  document.getElementById('debug-headers').addEventListener('click', async ()=>{
+    try{
+      const resp = await apiFetch('/debug/headers', {method:'GET', auth:false});
+      showMessage('Server saw headers: ' + JSON.stringify(resp));
+    }catch(err){
+      showMessage('Debug headers failed: ' + err.message, 'error');
+    }
+  });
 
   // On load: if token present, mark logged and fetch data
   (async function init(){

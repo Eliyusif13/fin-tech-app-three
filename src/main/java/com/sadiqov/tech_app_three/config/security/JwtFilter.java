@@ -39,13 +39,18 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = request.getHeader("token");
         if (Objects.nonNull(token) && !token.isEmpty()) {
-            if (Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
-                UserDetails user = userDetailsService.loadUserByUsername(jwtUtil.getUserPin(token));
-                if (jwtUtil.validateToken(token, user)) {
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            try {
+                if (Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
+                    UserDetails user = userDetailsService.loadUserByUsername(jwtUtil.getUserPin(token));
+                    if (jwtUtil.validateToken(token, user)) {
+                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    }
                 }
+            } catch (Exception ex) {
+                // Log and continue without authentication so requests (including preflight/public) are not blocked by filter exceptions
+                System.err.println("JwtFilter: token validation error: " + ex.getMessage());
             }
         }
         filterChain.doFilter(request,response);

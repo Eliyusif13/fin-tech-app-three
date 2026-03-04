@@ -3,6 +3,7 @@ package com.sadiqov.tech_app_three.config.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @EnableWebSecurity
 @Configuration
@@ -46,14 +48,14 @@ public class ApplicationSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration config = new CorsConfiguration();
-        // Allow specific development origins. Change or externalize for production.
-        config.setAllowedOrigins(Arrays.asList("http://localhost:63342", "http://127.0.0.1:63342", "http://localhost:8080"));
+        // For development: allow all origins via patterns and allow all headers/methods
+        config.setAllowedOriginPatterns(Collections.singletonList("*"));
         config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
-        // Ensure the frontend can read this header if backend sends it as response header
-        config.setExposedHeaders(Arrays.asList("token"));
-        // If you need cookies/credentials, set to true and ensure AllowedOrigins are explicit (not "*")
-        config.setAllowCredentials(true);
+        // Expose token header if backend sets it
+        config.setExposedHeaders(Collections.singletonList("token"));
+        // Disable credentials when using wildcard origins — safer for quick dev
+        config.setAllowCredentials(false);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
@@ -71,7 +73,8 @@ public class ApplicationSecurityConfig {
                     csrf().
                     disable()
                     .authorizeRequests()
-                    .antMatchers("/api/v1/register","/api/v1/login","/api/v1/currency","/api/v1/")
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .antMatchers("/api/v1/register","/api/v1/login","/api/v1/currency","/api/v1/","/debug/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated()
