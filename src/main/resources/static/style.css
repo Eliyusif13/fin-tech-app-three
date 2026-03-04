@@ -1,0 +1,145 @@
+/* Ümumi tənzimləmələr */
+:root {
+    --primary-blue: #0056b3;
+    --light-blue: #e3f2fd;
+    --bank-red: #d32f2f;
+    --bank-red-hover: #b71c1c;
+    --gradient-blue: linear-gradient(135deg, #0056b3 0%, #00a0e9 100%);
+    --gradient-red: linear-gradient(135deg, #d32f2f 0%, #ff5252 100%);
+    --white: #ffffff;
+    --gray-bg: #f8f9fa;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body {
+    background-color: var(--gray-bg);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #333;
+}
+
+/* Header dizaynı */
+header {
+    background: var(--white);
+    padding: 1.5rem;
+    border-bottom: 3px solid var(--primary-blue);
+    box-shadow: var(--shadow);
+    border-radius: 0 0 15px 15px;
+}
+
+header h1 {
+    background: var(--gradient-blue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+/* Kartlar (Sections) */
+section {
+    background: var(--white) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+section:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+section h2 {
+    color: var(--primary-blue);
+    border-left: 4px solid var(--bank-red);
+    padding-left: 10px;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Düymələr */
+button {
+    transition: all 0.3s ease !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.75rem !important;
+}
+
+/* Mavi Düymə (Login, Save) */
+.bg-blue-600, .bg-indigo-600 {
+    background: var(--gradient-blue) !important;
+    border: none !important;
+}
+
+.bg-blue-600:hover, .bg-indigo-600:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+/* Qırmızı Düymə (Logout) */
+#logout-btn {
+    background: var(--gradient-red) !important;
+    border: none !important;
+}
+
+/* Yaşıl Düymə (Register) */
+.bg-green-600 {
+    background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%) !important;
+}
+
+/* Inputlar */
+input {
+    border: 1.5px solid #e0e0e0 !important;
+    padding: 0.6rem !important;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    outline: none !important;
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1) !important;
+}
+
+/* Cədvəllər */
+table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+thead th {
+    background-color: var(--light-blue) !important;
+    color: var(--primary-blue) !important;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    border: none !important;
+}
+
+tbody tr {
+    background-color: var(--white);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: background 0.2s;
+}
+
+tbody tr:hover {
+    background-color: var(--light-blue);
+}
+
+tbody td {
+    padding: 12px !important;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Transfer Kartı */
+#transfer-card {
+    background-color: var(--light-blue);
+    border: 1px dashed var(--primary-blue);
+}
+
+/* Mesajlar */
+#message div {
+    border-radius: 8px;
+    font-weight: 500;
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
