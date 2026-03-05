@@ -1,145 +1,180 @@
-/* Ümumi tənzimləmələr */
+/* Modern Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
 :root {
-    --primary-blue: #0056b3;
-    --light-blue: #e3f2fd;
-    --bank-red: #d32f2f;
-    --bank-red-hover: #b71c1c;
-    --gradient-blue: linear-gradient(135deg, #0056b3 0%, #00a0e9 100%);
-    --gradient-red: linear-gradient(135deg, #d32f2f 0%, #ff5252 100%);
-    --white: #ffffff;
-    --gray-bg: #f8f9fa;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --bg-color: #f0f4f8;
+    --card-bg: #ffffff;
+    --primary-blue: #2563eb;
+    --accent-red: #ef4444;
+    --text-main: #1e293b;
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 body {
-    background-color: var(--gray-bg);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #333;
+    background: radial-gradient(circle at top right, #e0f2fe, #f0f4f8);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-main);
+    line-height: 1.6;
 }
 
-/* Header dizaynı */
+/* Header-in şüşə kimi görünməsi */
 header {
-    background: var(--white);
-    padding: 1.5rem;
-    border-bottom: 3px solid var(--primary-blue);
-    box-shadow: var(--shadow);
-    border-radius: 0 0 15px 15px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--glass-shadow);
 }
 
 header h1 {
-    background: var(--gradient-blue);
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(to right, #2563eb, #ef4444);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 800;
 }
 
-/* Kartlar (Sections) */
+/* Seksiyalar (Kartlar) */
 section {
-    background: var(--white) !important;
-    border-radius: 12px !important;
-    border: 1px solid rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
-}
-
-section:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-section h2 {
-    color: var(--primary-blue);
-    border-left: 4px solid var(--bank-red);
-    padding-left: 10px;
-    margin-bottom: 1.5rem !important;
-}
-
-/* Düymələr */
-button {
-    transition: all 0.3s ease !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.75rem !important;
-}
-
-/* Mavi Düymə (Login, Save) */
-.bg-blue-600, .bg-indigo-600 {
-    background: var(--gradient-blue) !important;
+    background: var(--card-bg) !important;
     border: none !important;
+    border-radius: 24px !important;
+    padding: 25px !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover effekti: Kart qalxır və kölgə böyüyür */
+section:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--hover-shadow) !important;
+}
+
+section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-blue), var(--accent-red));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+section:hover::before {
+    opacity: 1;
+}
+
+/* Kreativ Başlıqlar */
+h2 {
+    font-weight: 600;
+    position: relative;
+    display: inline-block;
+    color: var(--primary-blue);
+}
+
+/* Düymələrin Neon Effekti */
+button {
+    border-radius: 12px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Mavi Düymələr (Login/Send) */
+.bg-blue-600, .bg-indigo-600 {
+    background: var(--primary-blue) !important;
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
 }
 
 .bg-blue-600:hover, .bg-indigo-600:hover {
-    filter: brightness(1.1);
-    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5) !important;
+    transform: scale(1.05);
 }
 
-/* Qırmızı Düymə (Logout) */
+/* Logout (Qırmızı) */
 #logout-btn {
-    background: var(--gradient-red) !important;
-    border: none !important;
+    background: var(--accent-red) !important;
+    box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.39);
 }
 
-/* Yaşıl Düymə (Register) */
-.bg-green-600 {
-    background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%) !important;
+#logout-btn:hover {
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5) !important;
 }
 
-/* Inputlar */
+/* Input Sahələri */
 input {
-    border: 1.5px solid #e0e0e0 !important;
-    padding: 0.6rem !important;
-    transition: border-color 0.3s ease;
+    background: #f8fafc !important;
+    border: 2px solid transparent !important;
+    border-radius: 12px !important;
+    padding: 12px !important;
+    transition: all 0.3s ease !important;
 }
 
 input:focus {
-    outline: none !important;
+    background: #fff !important;
     border-color: var(--primary-blue) !important;
-    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1) !important;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important;
+    outline: none;
 }
 
-/* Cədvəllər */
+/* Cədvəl Dizaynı */
+.overflow-auto {
+    border-radius: 15px;
+}
+
 table {
-    border-collapse: separate;
-    border-spacing: 0 8px;
-}
-
-thead th {
-    background-color: var(--light-blue) !important;
-    color: var(--primary-blue) !important;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    border: none !important;
+    border-radius: 15px;
+    border-collapse: separate !important;
+    border-spacing: 0 10px !important;
+    background: transparent !important;
 }
 
 tbody tr {
-    background-color: var(--white);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    transition: background 0.2s;
+    background: white !important;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    transition: all 0.3s ease;
 }
 
 tbody tr:hover {
-    background-color: var(--light-blue);
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: var(--light-blue) !important;
 }
 
 tbody td {
-    padding: 12px !important;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 15px !important;
+    border: none !important;
 }
 
-/* Transfer Kartı */
+tbody td:first-child { border-radius: 15px 0 0 15px; }
+tbody td:last-child { border-radius: 0 15px 15px 0; }
+
+/* Transfer Kartı (Özəl vurğu) */
 #transfer-card {
-    background-color: var(--light-blue);
-    border: 1px dashed var(--primary-blue);
+    background: linear-gradient(145deg, #ffffff, #e0f2fe) !important;
+    border: 2px dashed #bae6fd !important;
 }
 
 /* Mesajlar */
 #message div {
-    border-radius: 8px;
-    font-weight: 500;
-    animation: slideIn 0.5s ease;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    animation: bounceIn 0.5s ease;
 }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes bounceIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    70% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
 }
